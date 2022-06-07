@@ -44,8 +44,10 @@ ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             dY,
             actionState,
             isCurrentlyActive)
-            .addBackgroundColor(deleteColor)
-            .addActionIcon(deleteIcon)
+            .addSwipeRightBackgroundColor(deleteColor)
+            .addSwipeRightActionIcon(deleteIcon)
+            .addSwipeLeftBackgroundColor(editColor)
+            .addSwipeLeftActionIcon(editIcon)
             .create()
             .decorate()
 

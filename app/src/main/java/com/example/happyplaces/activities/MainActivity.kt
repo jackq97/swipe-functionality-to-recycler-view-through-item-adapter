@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.happyplaces.database.Adapter
 import com.example.happyplaces.database.PlaceApplication
 import com.example.happyplaces.database.PlaceEntity
 import com.example.happyplaces.database.PlacesDao
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
     }
 
     override fun onItemClick(position: Int, id: Int) {
-        val intent = Intent(this, PlaceViewActivity::class.java)
+        val intent = Intent(this, PlaceInfoActivity::class.java)
         intent.putExtra("id", id)
         Log.i("room database: id", "$id")
         startActivity(intent)
@@ -112,6 +113,16 @@ class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
 
                     ItemTouchHelper.LEFT -> {
                         Toast.makeText(applicationContext, "swiped left", Toast.LENGTH_SHORT).show()
+                       val intent = Intent(applicationContext, PlaceEditDetails::class.java)
+                        val id = itemAdapter?.getId(viewHolder.bindingAdapterPosition)
+                        if (id != null) {
+                            intent.putExtra("id", id)
+                            startActivity(intent)
+                        } else {
+                            Toast.makeText(applicationContext,
+                                "Error retrieving Id",
+                                Toast.LENGTH_SHORT).show()
+                        }
                     }
 
                     ItemTouchHelper.RIGHT -> {

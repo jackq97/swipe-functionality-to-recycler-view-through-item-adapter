@@ -11,7 +11,7 @@ import com.example.happyplaces.databinding.ActivityPlaceViewBinding
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class PlaceViewActivity : AppCompatActivity() {
+class PlaceInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlaceViewBinding.inflate(layoutInflater)

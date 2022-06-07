@@ -1,16 +1,16 @@
-package com.example.happyplaces.activities
+package com.example.happyplaces.database
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
-import com.example.happyplaces.database.PlaceEntity
 import com.example.happyplaces.databinding.ListMainRecyclerViewBinding
 
 class Adapter(
     private val items: ArrayList<PlaceEntity>,
-    private val listener: OnItemClickListener ): RecyclerView.Adapter<Adapter.ViewHolder>() {
+    private val listener: OnItemClickListener
+): RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(ListMainRecyclerViewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
