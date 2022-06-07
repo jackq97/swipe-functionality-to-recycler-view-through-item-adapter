@@ -17,6 +17,7 @@ import com.example.happyplaces.database.PlaceEntity
 import com.example.happyplaces.database.PlacesDao
 import com.example.happyplaces.databinding.ActivityAddHappyPlaceBinding
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.android.libraries.places.api.Places
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import java.util.*
@@ -29,25 +30,9 @@ class AddHappyPlaceActivity : AppCompatActivity() {
         setContentView(binding?.root)
         // onCreate
 
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
+        if (!Places.isInitialized()) {
 
-        //date picker
-        val dpd = DatePickerDialog(this, { _, Year, monthOfYear, dayOfMonth ->
-
-            // Display Selected date in textbook
-            // Adding 1 to our month cause months start from zero
-            val selectedDate = "$dayOfMonth/${monthOfYear + 1}/$Year"
-
-            //displaying the data in our main tv
-            binding?.etDate?.setText(selectedDate)
-
-                                         }, year, month, day)
-
-        //this prevents user from setting the date in future
-        dpd.datePicker.maxDate = System.currentTimeMillis()
+        }
 
         // tool bar
         setSupportActionBar(binding?.tbHappyPlace)
@@ -57,32 +42,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        binding?.etDate?.setOnClickListener {
-
-            dpd.show()
-        }
-
-        // uri var
-        var fileUri: Uri? = null
-
-        val startForProfileImageResult =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-                val resultCode = result.resultCode
-                val data = result.data
-
-                if (resultCode == Activity.RESULT_OK) {
-                    //Image Uri will not be null for RESULT_OK
-                    fileUri = data?.data!!
-                    binding?.ivLocation?.setImageURI(fileUri)
-
-                    // Log.e("image path", "$fileUri")
-
-                } else if (resultCode == ImagePicker.RESULT_ERROR) {
-                    Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show()
-                }
-            }
+        binding?.etDate?.setOnClickListener {datePickerDialog()}
 
         binding?.tvAddImage?.setOnClickListener {
 
@@ -99,7 +59,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
             val snackBar = Snackbar.make(it, "Data Saved", Snackbar.LENGTH_SHORT)
             val db = ( application as PlaceApplication ).db.placesDao()
             if (fileUri != null) {
-                addDataInDataBase(db, snackBar, fileUri!!)
+                addDataInDataBase(db, snackBar)
             } else {
                 Toast.makeText(this, "failed to fetch image", Toast.LENGTH_SHORT).show()
             }
@@ -112,14 +72,36 @@ class AddHappyPlaceActivity : AppCompatActivity() {
 
     private var binding: ActivityAddHappyPlaceBinding? = null
 
+    // uri var
+    private var fileUri: Uri? = null
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            val resultCode = result.resultCode
+            val data = result.data
+
+            if (resultCode == Activity.RESULT_OK) {
+                //Image Uri will not be null for RESULT_OK
+                fileUri = data?.data!!
+                binding?.ivLocation?.setImageURI(fileUri)
+
+                // Log.e("image path", "$fileUri")
+
+            } else if (resultCode == ImagePicker.RESULT_ERROR) {
+                Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     private fun addDataInDataBase(placesDao: PlacesDao,
-                                  snackBar: Snackbar,
-                                  image: Uri) {
+                                  snackBar: Snackbar) {
 
         val title: String = binding?.etTitle?.text.toString()
         val description: String = binding?.etDescription?.text.toString()
         val date: String = binding?.etDate?.text.toString()
         val location: String = binding?.etLocation?.text.toString()
+        val image: String = fileUri.toString()
         //val longitude: String =
         //val latitude: String =
 
@@ -131,7 +113,7 @@ class AddHappyPlaceActivity : AppCompatActivity() {
                     description = description,
                     date = date,
                     location = location,
-                    image = image.toString()
+                    image = image
                 ))
                 snackBar.show()
             }
@@ -143,6 +125,36 @@ class AddHappyPlaceActivity : AppCompatActivity() {
 
     }
 
+    private val c = Calendar.getInstance()
+    private val year = c.get(Calendar.YEAR)
+    private val month = c.get(Calendar.MONTH)
+    private val day = c.get(Calendar.DAY_OF_MONTH)
 
+    private fun datePickerDialog() {
+
+        //date picker
+        val dpd = DatePickerDialog(this, { _, Year, monthOfYear, dayOfMonth ->
+
+            // Display Selected date in textbook
+            // Adding 1 to our month cause months start from zero
+            val selectedDate = "$dayOfMonth/${monthOfYear + 1}/$Year"
+
+
+            //displaying the data in our main tv
+            binding?.etDate?.setText(selectedDate)
+
+        }, year, month, day)
+
+        //this prevents user from setting the date in future
+        dpd.datePicker.maxDate = System.currentTimeMillis()
+
+        dpd.show()
+
+    }
+
+    override fun onDestroy() {
+        binding = null
+        super.onDestroy()
+    }
 
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -95,9 +96,15 @@ class MainActivity : AppCompatActivity(), Adapter.OnItemClickListener {
 
             itemAdapter = Adapter(placesList, this)
 
+            binding?.rvMain?.visibility = View.VISIBLE
+            binding?.tvRecords?.visibility = View.GONE
             binding?.rvMain?.layoutManager = LinearLayoutManager(this)
             binding?.rvMain?.adapter = itemAdapter
 
+        } else {
+
+            binding?.rvMain?.visibility = View.GONE
+            binding?.tvRecords?.visibility = View.VISIBLE
         }
     }
 
